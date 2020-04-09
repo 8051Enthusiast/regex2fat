@@ -5,9 +5,9 @@ Did you ever want to match a regex, but all you had was a fat32 driver?
 Ever wanted to serialize your regex DFAs into one of the most widely supported formats used by over 3 billion devices?
 [Are directory loops your thing?](https://xkcd.com/981/)
 
-Worry no more, with `regex2fat`, this has become easier than ever before!
+Worry no more, with `regex2fat` this has become easier than ever before!
 With just a little `regex2fat '[YOUR] F{4}VOUR{1,7}E (R[^E]G)*EX HERE.' /dev/whatever`, you will have a fat32 regex DFA of your favourite regex.
-For example, to see whether the string 'Y FFFFVOURRE EX HEREM' would match, just mount it and check if '/Y/SPACE/F/F/F/F/V/O/U/R/R/E/SPACE/E/X/SPACE/H/E/R/E/M/MATCH' exists.
+For example, to see whether the string `'Y FFFFVOURRE EX HEREM'` would match, just mount it and check if `'/Y/SPACE/F/F/F/F/V/O/U/R/R/E/SPACE/E/X/SPACE/H/E/R/E/M/MATCH'` exists.
 
 To run it, you can [install cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) and then run `cargo install regex2fat` (or compile it directly from this repo).
 If you have the cargo bin directory in your path, you should be able to invoke it like described above.
