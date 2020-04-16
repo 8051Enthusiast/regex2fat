@@ -26,7 +26,7 @@ The directories also have no explicit field for parent directories, so one can l
 This allows for graph structures inside a file system, which a DFA basically is.
 
 ### Q: Should I use this <del>in production</del> anywhere?
-A: No, but I can't stop you.
+A: Yes
 
 ### Q: Does this actually work?
 A: I've tried it on Windows 10 and Linux so far.
