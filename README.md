@@ -15,7 +15,7 @@ The file created will be a fat32 image, which can probably be mounted or put on 
 
 ## FAQ
 ### Q: How does this work?
-A: Regular regexes (i.e. no backreferences and similar advanced features) can be turned into a so called DFA (deterministic state automaton).
+A: Regular regexes (i.e. no backreferences and similar advanced features) can be turned into a so called DFA (deterministic finite automaton).
 This is basically a bunch of arrows going between states, where an arrow is labeled with a letter so that a letter in a state causes the current state to go along the arrow to another state, with a subset of states being accepting.
 Yes, I'm bad at explaining, you're better off reading [the wikipedia article on DFAs](https://en.wikipedia.org/wiki/Deterministic_finite_automaton) if you don't know what it is.
 
