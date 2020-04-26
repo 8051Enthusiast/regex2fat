@@ -170,8 +170,7 @@ pub fn generate_dir_short(letter: u8, target: UFat) -> Vec<u8> {
     dir_entry
 }
 
-pub fn generate_match(target: UFat) -> Vec<u8> {
-    let name_8_3 = *b"MATCH      ";
+pub fn generate_file(name_8_3: [u8; 11], target: UFat) -> Vec<u8> {
     let mut dir_entry = ENTRY_TEMPLATE.to_vec();
     for (x, &y) in dir_entry.iter_mut().take(11).zip(name_8_3.iter()) {
         *x = y;
