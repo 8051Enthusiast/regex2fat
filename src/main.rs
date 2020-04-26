@@ -1,6 +1,7 @@
 mod fat32;
 use clap::{App, Arg};
 use fat32::{StateFatMap, StatePosInfo, UFat};
+use rand::{thread_rng,seq::SliceRandom};
 use regex_automata::{dense, DFA};
 use std::collections::{HashMap, HashSet};
 use std::error::Error;
@@ -32,6 +33,7 @@ fn determine_state_positions<D: DFA>(
     // keep track of visited states
     let mut state_set = HashSet::new();
     state_vec.push(dfa.start_state());
+
     while let Some(&current_state) = state_vec.get(current_index) {
         // queue all unvisited states from current state
         for &next_byte in validlist {
@@ -40,6 +42,13 @@ fn determine_state_positions<D: DFA>(
                 state_vec.push(next_state);
             }
         }
+        current_index += 1;
+    }
+
+    state_vec.shuffle(&mut thread_rng());
+    current_index = 0;
+
+    while let Some(&current_state) = state_vec.get(current_index) {
         // relevant for size of directory (but mostly not because it's constant
         // and they're both the same)
         let size = if dfa.is_match_state(current_state) {
@@ -123,6 +132,12 @@ fn main() {
                 .short("a")
                 .long("anchor")
                 .help("Anchor regex at beginning (off by default)"),
+        )
+        .arg(
+            Arg::with_name("randomize")
+                .short("r")
+                .long("randomize")
+                .help("Randomize cluster numbers for the states (off by default)"),
         )
         .arg(
             Arg::with_name("pattern")

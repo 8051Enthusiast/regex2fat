@@ -13,3 +13,4 @@ license = "Unlicense"
 [dependencies]
 regex-automata = "0.1"
 clap = "2.33"
+rand = "0.7.3"
