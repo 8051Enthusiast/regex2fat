@@ -38,3 +38,9 @@ Might be fun to try on some embedded devices.
 
 ### Q: NOOOOOOOOOOO!!! YOU CAN'T TURN A DFA INTO A FAT32 FILE SYSTEM!!!! YOU CAN'T JUST HAVE A DIRECTORY WITH MULTIPLE PARENTS!!! YOU ARE BREAKING THE ASSUMPTION OF LACK OF LOOPERINOS NOOOOOOOOO
 A: Haha OS-driven regex engine go brrrrr
+
+### Q: How can I turn this into a macOS dmg file? 
+A: 
+
+    regex2fat '[YOUR] F{4}VOUR{1,7}E (R[^E]G)*EX HERE.' your_output.fat
+    hdiutil create your_dmg.dmg -srcdevice your_output.fat
