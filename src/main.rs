@@ -1,7 +1,7 @@
 mod fat32;
 use clap::{App, Arg};
 use fat32::{StateFatMap, StatePosInfo, UFat};
-use rand::{thread_rng,seq::SliceRandom};
+use rand::{thread_rng, seq::SliceRandom};
 use regex_automata::{dense, DFA};
 use std::collections::{HashMap, HashSet};
 use std::error::Error;
@@ -20,8 +20,9 @@ const FORBIDDEN_PRINT_ASCII: [u8; 17] = [
 fn determine_state_positions<D: DFA>(
     dfa: &D,
     validlist: &[u8],
+    nomatch: bool,
 ) -> Result<StateFatMap<D>, &'static str> {
-    let nomatch_len = validlist.len() * 32;
+    let nomatch_len = (validlist.len() + if nomatch { 1 } else { 0 }) * 32;
     let match_len = (validlist.len() + 1) * 32;
     // root directory starts at 2
     let mut current_block: UFat = 2;
@@ -45,10 +46,9 @@ fn determine_state_positions<D: DFA>(
         current_index += 1;
     }
 
-    state_vec.shuffle(&mut thread_rng());
-    current_index = 0;
+    state_vec[1..].shuffle(&mut thread_rng());
 
-    while let Some(&current_state) = state_vec.get(current_index) {
+    for &current_state in &state_vec {
         // relevant for size of directory (but mostly not because it's constant
         // and they're both the same)
         let size = if dfa.is_match_state(current_state) {
@@ -69,7 +69,6 @@ fn determine_state_positions<D: DFA>(
             }
             None => return Err("State machine exceeds Fate32 capacity!"),
         }
-        current_index += 1;
     }
     Ok(StateFatMap {
         blocks: current_block - 2,
@@ -82,8 +81,9 @@ fn regex_to_fat32<D: DFA, W: Write>(
     dfa: &D,
     validlist: &[u8],
     mut vol: W,
+    nomatch: bool,
 ) -> Result<(), Box<dyn Error>> {
-    let state_blocks = determine_state_positions(&dfa, &validlist)?;
+    let state_blocks = determine_state_positions(&dfa, &validlist, nomatch)?;
     // pad until at least 65536 blocks, since otherwise ideologically
     // I would have to implement fat12/fat16
     // also keep at least one free block for match file (which is 0 bytes,
@@ -102,7 +102,9 @@ fn regex_to_fat32<D: DFA, W: Write>(
         }
         // if accepting state, put match file into dir
         if dfa.is_match_state(state) {
-            current_dir.append(&mut fat32::generate_match(state_blocks.blocks + 2))
+            current_dir.append(&mut fat32::generate_file(*b"MATCH      ", state_blocks.blocks + 2))
+        } else if nomatch {
+            current_dir.append(&mut fat32::generate_file(*b"NOMATCH    ", state_blocks.blocks + 2))
         }
         if current_dir.len() % fat32::BLOCK_SIZE == 0 {
             vol.write_all(&current_dir)?;
@@ -152,6 +154,42 @@ fn main() {
                 .help("The file to write the fat fs to"),
         )
         .get_matches();
+    let matches =
+        App::new("regex2fat")
+            .version("0.1.0")
+            .author("8051Enthusiast")
+            .about("Convert regex DFAs to FAT32 file systems")
+            .arg(
+                Arg::with_name("anchor")
+                    .short("a")
+                    .long("anchor")
+                    .help("Anchor regex at beginning (off by default)"),
+            )
+            .arg(
+                Arg::with_name("pattern")
+                    .required(true)
+                    .index(1)
+                    .help("The regex pattern to match"),
+            )
+            .arg(
+                Arg::with_name("outfile")
+                    .required(true)
+                    .index(2)
+                    .help("The file to write the fat fs to"),
+            )
+            .arg(
+                Arg::with_name("nomatch")
+                    .short("n")
+                    .long("nomatch")
+                    .help("Generate NOMATCH files (off by default)"),
+            )
+            .arg(
+                Arg::with_name("randomize")
+                    .short("r")
+                    .long("randomize")
+                    .help("Randomize cluster numbers for the states (off by default)"),
+            )
+            .get_matches();
     let pattern = matches.value_of("pattern").unwrap();
     let dfa = dense::Builder::new()
         // fat32 is case insensitive
@@ -171,7 +209,8 @@ fn main() {
         eprintln!("Could not open file '{}': {}", outfile, err);
         exit(1);
     });
-    regex_to_fat32(&dfa, &validlist, file).unwrap_or_else(|err| {
+    let nomatch = matches.is_present("nomatch");
+    regex_to_fat32(&dfa, &validlist, file, nomatch).unwrap_or_else(|err| {
         eprintln!("Could not write DFA to '{}': {}", outfile, err);
         exit(1);
     });
