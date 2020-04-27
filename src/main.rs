@@ -125,35 +125,6 @@ fn regex_to_fat32<D: DFA, W: Write>(
 }
 
 fn main() {
-    let matches = App::new("regex2fat")
-        .version("0.1.0")
-        .author("8051Enthusiast")
-        .about("Convert regex DFAs to FAT32 file systems")
-        .arg(
-            Arg::with_name("anchor")
-                .short("a")
-                .long("anchor")
-                .help("Anchor regex at beginning (off by default)"),
-        )
-        .arg(
-            Arg::with_name("randomize")
-                .short("r")
-                .long("randomize")
-                .help("Randomize cluster numbers for the states (off by default)"),
-        )
-        .arg(
-            Arg::with_name("pattern")
-                .required(true)
-                .index(1)
-                .help("The regex pattern to match"),
-        )
-        .arg(
-            Arg::with_name("outfile")
-                .required(true)
-                .index(2)
-                .help("The file to write the fat fs to"),
-        )
-        .get_matches();
     let matches =
         App::new("regex2fat")
             .version("0.1.0")
