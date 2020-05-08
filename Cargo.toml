@@ -1,7 +1,7 @@
 [package]
 name = "regex2fat"
 description = "Turn your favourite regex into FAT32"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["8051Enthusiast <8051Enthusiast@protonmail.com>"]
 readme = "README.md"
 repository = "https://github.com/8051Enthusiast/regex2fat"
