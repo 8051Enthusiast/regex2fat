@@ -83,7 +83,7 @@ fn regex_to_fat32<D: DFA, W: Write>(
     mut vol: W,
     nomatch: bool,
 ) -> Result<(), Box<dyn Error>> {
-    let state_blocks = determine_state_positions(&dfa, &validlist, nomatch)?;
+    let state_blocks = determine_state_positions(&dfa, validlist, nomatch)?;
     // pad until at least 65536 blocks, since otherwise ideologically
     // I would have to implement fat12/fat16
     // also keep at least one free block for match file (which is 0 bytes,

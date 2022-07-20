@@ -105,7 +105,7 @@ pub fn generate_fat<D: DFA>(state_blocks: &StateFatMap<D>, pad: UFat) -> Result<
     fat.extend_from_slice(&FAT32_EOF);
     let mut current_cluster: UFat = 2;
     for state in &state_blocks.order_list {
-        let pl = match state_blocks.pos_hash.get(&state) {
+        let pl = match state_blocks.pos_hash.get(state) {
             Some(x) => x,
             None => return Err("Refernce to invalid state")
         };
